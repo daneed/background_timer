@@ -5,3 +5,6 @@
 .pub/
 
 build/
+example/ios/Podfile
+example/ios/Flutter/Debug.xcconfig
+example/ios/Flutter/Release.xcconfig
