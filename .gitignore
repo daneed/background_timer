@@ -8,3 +8,6 @@ build/
 example/ios/Podfile
 example/ios/Flutter/Debug.xcconfig
 example/ios/Flutter/Release.xcconfig
+example/ios/Podfile.lock
+example/ios/Runner.xcodeproj/project.pbxproj
+example/ios/Runner.xcworkspace/contents.xcworkspacedata
