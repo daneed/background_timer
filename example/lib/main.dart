@@ -31,7 +31,7 @@ class _MyAppState extends State<MyApp> {
     }
 
     try {
-      await IosBackgroundTimer.runBackgroundTimer(1000);
+      await IosBackgroundTimer.runBackgroundTimer(1000, callback: () {print("hello");});
     } on PlatformException {
       platformVersion = 'Failed to RUN background timer';
     }
