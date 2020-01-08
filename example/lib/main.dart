@@ -14,6 +14,8 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
 
+  int  _time = 0;
+
   @override
   void initState() {
     super.initState();
@@ -28,18 +30,6 @@ class _MyAppState extends State<MyApp> {
       platformVersion = await IosBackgroundTimer.platformVersion;
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
-    }
-
-    try {
-      await IosBackgroundTimer.runBackgroundTimer(1000, callback: () {print("hello");});
-    } on PlatformException {
-      platformVersion = 'Failed to RUN background timer';
-    }
-
-    try {
-      await IosBackgroundTimer.stopBackgroundTimer();
-    } on PlatformException {
-      platformVersion = 'Failed to STOP background timer';
     }
 
     // If the widget was removed from the tree while the asynchronous platform
@@ -60,9 +50,50 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Plugin example app'),
         ),
         body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+          child: buildPage ()
         ),
       ),
     );
+  }
+
+  Widget buildPage () {
+    return Column (
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: <Widget>[
+        Text('Running on: $_platformVersion\n'),
+        Row (
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            FlatButton (
+              child: Text ("START"),
+              onPressed: runTimer
+            ),
+            FlatButton (
+              child: Text ("STOP"),
+              onPressed: stopTimer
+            )
+          ],
+        ),
+        Container (
+          child: Text ("Time:" + _time.toString())
+        )
+      ],
+    );
+  }
+
+  void runTimer () async {
+    await IosBackgroundTimer.runBackgroundTimer(1000, () {
+      print("TICK");
+      setState(() {
+        _time++;
+      });
+    });
+  }
+
+  void stopTimer () async {
+    await IosBackgroundTimer.stopBackgroundTimer();
+    setState(() {
+      _time = 0;
+    });
   }
 }

@@ -16,16 +16,12 @@ class IosBackgroundTimer {
     return version;
   }
 
-  static Future<void> runBackgroundTimer(int delay, {Callback callback}) async {
+  static Future<void> runBackgroundTimer(int delay, Callback callback) async {
     int currentId = _nextCallbackId++;
-    _callbacksById[currentId] = callback ?? null;
+    _callbacksById[currentId] = callback;
     _channel.setMethodCallHandler(_methodCallHandler);
-    
-    if (_callbacksById[currentId] != null) {
-      _callbacksById[currentId]();
-    }
 
-    await _channel.invokeMethod('runBackgroundTimer', {'delay': delay});
+    await _channel.invokeMethod('runBackgroundTimer', {'id' : currentId, 'delay': delay});
 
     return () {
       stopBackgroundTimer ();
@@ -42,10 +38,10 @@ class IosBackgroundTimer {
       if (_callbacksById[call.arguments["id"]] != null) {
         _callbacksById[call.arguments["id"]]();
       }
-    } else if (call.method == 'runBackgroundTimerAck') {
-      print("runBackgroundTimerAck arrived from Plugin");
-    } else if (call.method == 'stopBackgroundTimerAck') {
-      print("stopBackgroundTimerAck arrived from Plugin");
+    } else if (call.method == 'IosBackgroundTimerAck') {
+      if (call.arguments["msg"] != null) {
+        print("runBackgroundTimerAck arrived from Plugin, msg: " + call.arguments["msg"]);
+      }
     }
   }
 }
