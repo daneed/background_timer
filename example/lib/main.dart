@@ -30,6 +30,18 @@ class _MyAppState extends State<MyApp> {
       platformVersion = 'Failed to get platform version.';
     }
 
+    try {
+      await IosBackgroundTimer.runBackgroundTimer(1000);
+    } on PlatformException {
+      platformVersion = 'Failed to RUN background timer';
+    }
+
+    try {
+      await IosBackgroundTimer.stopBackgroundTimer();
+    } on PlatformException {
+      platformVersion = 'Failed to STOP background timer';
+    }
+
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
     // setState to update our non-existent appearance.

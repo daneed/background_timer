@@ -19,5 +19,6 @@ void main() {
 
   test('getPlatformVersion', () async {
     expect(await IosBackgroundTimer.platformVersion, '42');
+    await IosBackgroundTimer.runBackgroundTimer(1000);
   });
 }

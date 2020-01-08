@@ -10,4 +10,12 @@ class IosBackgroundTimer {
     final String version = await _channel.invokeMethod('getPlatformVersion');
     return version;
   }
+
+  static Future<void> runBackgroundTimer(int delay) async {
+    _channel.invokeMethod('runBackgroundTimer', {'delay': delay});
+  }
+
+  static Future<void> stopBackgroundTimer() async {
+    _channel.invokeMethod('stopBackgroundTimer');
+  }
 }
