@@ -1,4 +1,4 @@
-# ios_background_timer
+# background_timer
 
 A new flutter plugin project.
 

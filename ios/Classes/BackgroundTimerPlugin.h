@@ -1,6 +1,6 @@
 #import <Flutter/Flutter.h>
 
-@interface IosBackgroundTimerPlugin : NSObject<FlutterPlugin>;
+@interface BackgroundTimerPlugin : NSObject<FlutterPlugin>;
 
 /*- (void) runBackgroundTimer: (NSInteger) currentId
                       delay: (NSInteger) timeout;

@@ -1,4 +1,4 @@
-package com.daneed.ios_background_timer
+package com.daneed.background_timer
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -8,11 +8,11 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
 
-/** IosBackgroundTimerPlugin */
-public class IosBackgroundTimerPlugin: FlutterPlugin, MethodCallHandler {
+/** BackgroundTimerPlugin */
+public class BackgroundTimerPlugin: FlutterPlugin, MethodCallHandler {
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-    val channel = MethodChannel(flutterPluginBinding.getFlutterEngine().getDartExecutor(), "ios_background_timer")
-    channel.setMethodCallHandler(IosBackgroundTimerPlugin());
+    val channel = MethodChannel(flutterPluginBinding.getFlutterEngine().getDartExecutor(), "_background_timer")
+    channel.setMethodCallHandler(BackgroundTimerPlugin());
   }
 
   // This static function is optional and equivalent to onAttachedToEngine. It supports the old
@@ -27,8 +27,8 @@ public class IosBackgroundTimerPlugin: FlutterPlugin, MethodCallHandler {
   companion object {
     @JvmStatic
     fun registerWith(registrar: Registrar) {
-      val channel = MethodChannel(registrar.messenger(), "ios_background_timer")
-      channel.setMethodCallHandler(IosBackgroundTimerPlugin())
+      val channel = MethodChannel(registrar.messenger(), "background_timer")
+      channel.setMethodCallHandler(BackgroundTimerPlugin())
     }
   }
 

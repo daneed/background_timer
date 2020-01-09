@@ -1,4 +1,4 @@
-group 'com.daneed.ios_background_timer'
+group 'com.daneed.background_timer'
 version '1.0-SNAPSHOT'
 
 buildscript {

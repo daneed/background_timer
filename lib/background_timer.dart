@@ -4,13 +4,13 @@ import 'package:flutter/services.dart';
 
 typedef void Callback();
 
-class IosBackgroundTimer {
+class BackgroundTimer {
   static Timer myTimer;
   static int _nextCallbackId = 0;
   static Map<int, Callback> _callbacksById = new Map ();
 
   static const MethodChannel _channel =
-      const MethodChannel('ios_background_timer');
+      const MethodChannel('background_timer');
 
   static Future<void> periodic(int delay, Callback callback) async {
     bool isActiveVal = await isActive;
@@ -58,7 +58,7 @@ class IosBackgroundTimer {
       if (_callbacksById[call.arguments["id"]] != null) {
         _callbacksById[call.arguments["id"]]();
       }
-    } else if (call.method == 'IosBackgroundTimerAck') {
+    } else if (call.method == 'BackgroundTimerAck') {
       if (call.arguments["msg"] != null) {
         print("runBackgroundTimerAck arrived from Plugin, msg: " + call.arguments["msg"]);
       }

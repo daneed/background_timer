@@ -1,6 +1,6 @@
-# ios_background_timer_example
+# background_timer_example
 
-Demonstrates how to use the ios_background_timer plugin.
+Demonstrates how to use the background_timer plugin.
 
 ## Getting Started
 

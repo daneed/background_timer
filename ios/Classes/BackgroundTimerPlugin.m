@@ -1,15 +1,15 @@
-#import "IosBackgroundTimerPlugin.h"
+#import "BackgroundTimerPlugin.h"
 
 static FlutterMethodChannel* channel;
 
-@implementation IosBackgroundTimerPlugin {
+@implementation BackgroundTimerPlugin {
   UIBackgroundTaskIdentifier bgTask;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  channel = [FlutterMethodChannel methodChannelWithName: @"ios_background_timer"
+  channel = [FlutterMethodChannel methodChannelWithName: @"background_timer"
                                         binaryMessenger: [registrar messenger]];
-  IosBackgroundTimerPlugin* instance = [[IosBackgroundTimerPlugin alloc] init];
+  BackgroundTimerPlugin* instance = [[BackgroundTimerPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel: channel];
 }
 
@@ -41,9 +41,9 @@ static FlutterMethodChannel* channel;
 {
   NSLog ([NSString stringWithFormat:@"runBackgroundTimer called, timeout: %d", timeout]);
   if(bgTask != UIBackgroundTaskInvalid) {
-    [channel invokeMethod:@"IosBackgroundTimerAck" arguments: @{@"msg": @" run FAILED, it is already running"}];
+    [channel invokeMethod:@"BackgroundTimerAck" arguments: @{@"msg": @" run FAILED, it is already running"}];
   } else {
-    [channel invokeMethod:@"IosBackgroundTimerAck" arguments: @{@"msg": @" run SUCCEED, starting timer"}];
+    [channel invokeMethod:@"BackgroundTimerAck" arguments: @{@"msg": @" run SUCCEED, starting timer"}];
     [self timeout:currentId delay: timeout];
   }
 }
@@ -51,18 +51,18 @@ static FlutterMethodChannel* channel;
 - (void) stopBackgroundTimer {
   NSLog (@"stopBackgroundTimer called");
   if(bgTask != UIBackgroundTaskInvalid) {
-    [channel invokeMethod:@"IosBackgroundTimerAck" arguments: @{@"msg": @" stop OK"}];
+    [channel invokeMethod:@"BackgroundTimerAck" arguments: @{@"msg": @" stop OK"}];
     [[UIApplication sharedApplication] endBackgroundTask:bgTask];
     bgTask = UIBackgroundTaskInvalid;
   } else {
-    [channel invokeMethod:@"IosBackgroundTimerAck" arguments: @{@"msg": @" stop FAILED, it is stopped"}];
+    [channel invokeMethod:@"BackgroundTimerAck" arguments: @{@"msg": @" stop FAILED, it is stopped"}];
   }
 }
 
 - (void) timeout : (NSInteger) currentId
            delay : (NSInteger) timeout
 {
-  bgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithName:@"IosBackgroundTimer" expirationHandler:^{
+  bgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithName:@"BackgroundTimer" expirationHandler:^{
     [[UIApplication sharedApplication] endBackgroundTask:bgTask];
     bgTask = UIBackgroundTaskInvalid;
   }];

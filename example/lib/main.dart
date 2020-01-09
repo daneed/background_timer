@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:ios_background_timer/ios_background_timer.dart';
+import 'package:background_timer/background_timer.dart';
 
 void main() => runApp(MyApp());
 
@@ -56,7 +56,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   void runTimer () async {
-    await IosBackgroundTimer.periodic(1000, () {
+    await BackgroundTimer.periodic(1000, () {
       setState(() {
         _time++;
         print("TICK, " + _time.toString() + " s");
@@ -65,7 +65,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   void stopTimer () async {
-    await IosBackgroundTimer.cancel();
+    await BackgroundTimer.cancel();
     setState(() {
       _time = 0;
     });

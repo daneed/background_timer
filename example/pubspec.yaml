@@ -1,5 +1,5 @@
-name: ios_background_timer_example
-description: Demonstrates how to use the ios_background_timer plugin.
+name: background_timer_example
+description: Demonstrates how to use the background_timer plugin.
 publish_to: 'none'
 
 environment:
@@ -17,7 +17,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  ios_background_timer:
+  background_timer:
     path: ../
 
 # For information on the generic Dart part of this file, see the
