@@ -5,6 +5,6 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   test('getPlatformVersion', () async {
-    expect(await BackgroundTimer.isActive, false);
+    expect(BackgroundTimer.isActive, false);
   });
 }

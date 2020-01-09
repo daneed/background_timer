@@ -5,25 +5,29 @@ import 'package:flutter/services.dart';
 typedef void Callback();
 
 class BackgroundTimer {
-  static Timer myTimer;
+  static Timer _myTimer;
   static int _nextCallbackId = 0;
   static Map<int, Callback> _callbacksById = new Map ();
+  static bool _isActive = false;
 
   static const MethodChannel _channel =
-      const MethodChannel('background_timer');
+      const MethodChannel('background_tmer');
 
   static Future<void> periodic(int delay, Callback callback) async {
-    bool isActiveVal = await isActive;
-    if (!isActiveVal) {
+    if (!isActive) {
       if (!await _channel.invokeMethod('lowLevelHandlingEnabled')) {
-        myTimer = Timer.periodic(Duration (milliseconds: delay), (Timer t) {callback ();});
+        _isActive = true;
+        _myTimer = Timer.periodic(Duration (milliseconds: delay), (Timer t) {
+          callback ();
+        });
+        _isActive = false;
       } else {
         int currentId = _nextCallbackId++;
         _callbacksById[currentId] = callback;
         _channel.setMethodCallHandler(_methodCallHandler);
-
+        _isActive = true;
         await _channel.invokeMethod('runBackgroundTimer', {'id' : currentId, 'delay': delay});
-
+        _isActive = false;
         return () {
           cancel ();
           _callbacksById.remove(currentId);
@@ -33,24 +37,19 @@ class BackgroundTimer {
   }
 
   static Future<void> cancel() async {
-    bool isActiveVal = await isActive;
-    if (isActiveVal) {
+    if (isActive) {
       if (!await _channel.invokeMethod('lowLevelHandlingEnabled')) {
-        myTimer.cancel();
-        myTimer = null;
+        _myTimer.cancel();
+        _myTimer = null;
       } else {
         await _channel.invokeMethod('stopBackgroundTimer');
+        _isActive = false;
       }
     }
   }
 
-  static Future<bool> get isActive async {
-    if (!await _channel.invokeMethod('lowLevelHandlingEnabled')) {
-      return myTimer != null && myTimer.isActive;
-    } else {
-       final bool retval = await _channel.invokeMethod('isBackgroundTimerRunning');
-       return retval;
-    }
+  static bool get isActive {
+    return _isActive;
   }
 
   static Future<void> _methodCallHandler(MethodCall call) async {
