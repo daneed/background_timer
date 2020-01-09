@@ -16,7 +16,7 @@ class IosBackgroundTimer {
     return version;
   }
 
-  static Future<void> runBackgroundTimer(int delay, Callback callback) async {
+  static Future<void> periodic(int delay, Callback callback) async {
     int currentId = _nextCallbackId++;
     _callbacksById[currentId] = callback;
     _channel.setMethodCallHandler(_methodCallHandler);
@@ -24,12 +24,12 @@ class IosBackgroundTimer {
     await _channel.invokeMethod('runBackgroundTimer', {'id' : currentId, 'delay': delay});
 
     return () {
-      stopBackgroundTimer ();
+      cancel ();
       _callbacksById.remove(currentId);
     };
   }
 
-  static Future<void> stopBackgroundTimer() async {
+  static Future<void> cancel() async {
     _channel.invokeMethod('stopBackgroundTimer');
   }
 

@@ -82,7 +82,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   void runTimer () async {
-    await IosBackgroundTimer.runBackgroundTimer(1000, () {
+    await IosBackgroundTimer.periodic(1000, () {
       print("TICK");
       setState(() {
         _time++;
@@ -91,7 +91,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   void stopTimer () async {
-    await IosBackgroundTimer.stopBackgroundTimer();
+    await IosBackgroundTimer.cancel();
     setState(() {
       _time = 0;
     });
