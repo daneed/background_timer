@@ -19,7 +19,7 @@ static FlutterMethodChannel* channel;
 }
 
 - (void) handleMethodCall:(FlutterMethodCall*) call result: (FlutterResult) result {
-  if (@"lowLevelHandlingEnabled" isEqualToString: call.method]) {
+  if ([@"lowLevelHandlingEnabled" isEqualToString: call.method]) {
       result([NSNumber numberWithBool:true]);
   } else if ([@"runBackgroundTimer" isEqualToString: call.method]) {
     NSNumber* currentId = call.arguments[@"id"];
