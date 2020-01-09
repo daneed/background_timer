@@ -2,9 +2,9 @@
 
 @interface IosBackgroundTimerPlugin : NSObject<FlutterPlugin>;
 
-- (void) runBackgroundTimer: (NSInteger) currentId
+/*- (void) runBackgroundTimer: (NSInteger) currentId
                       delay: (NSInteger) timeout;
 
-- (void) stopBackgroundTimer;
+- (void) stopBackgroundTimer;*/
 
 @end

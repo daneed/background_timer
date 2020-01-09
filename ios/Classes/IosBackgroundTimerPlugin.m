@@ -19,15 +19,21 @@ static FlutterMethodChannel* channel;
 }
 
 - (void) handleMethodCall:(FlutterMethodCall*) call result: (FlutterResult) result {
-  if ([@"runBackgroundTimer" isEqualToString: call.method]) {
+  if (@"lowLevelHandlingEnabled" isEqualToString: call.method]) {
+      result([NSNumber numberWithBool:true]);
+  } else if ([@"runBackgroundTimer" isEqualToString: call.method]) {
     NSNumber* currentId = call.arguments[@"id"];
     NSNumber* delay = call.arguments[@"delay"];
     [self runBackgroundTimer : [currentId integerValue] delay: [delay integerValue]];
+     result(nil);
   } else if ([@"stopBackgroundTimer" isEqualToString: call.method]) {
     [self stopBackgroundTimer];
+     result(nil);
+  } else if ([@"isBackgroundTimerRunning" isEqualToString: call.method]) {
+    result([NSNumber numberWithBool:(bgTask != UIBackgroundTaskInvalid)]);
+  } else {
+     result(nil);
   }
-
-  result ([NSString stringWithFormat:@"%@ %@", @"iOS", [[UIDevice currentDevice] systemVersion]]);
 }
 
 - (void) runBackgroundTimer: (NSInteger) currentId

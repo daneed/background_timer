@@ -5,32 +5,52 @@ import 'package:flutter/services.dart';
 typedef void Callback();
 
 class IosBackgroundTimer {
+  static Timer myTimer;
   static int _nextCallbackId = 0;
   static Map<int, Callback> _callbacksById = new Map ();
 
   static const MethodChannel _channel =
       const MethodChannel('ios_background_timer');
 
-  static Future<String> get platformVersion async {
-    final String version = await _channel.invokeMethod('getPlatformVersion');
-    return version;
-  }
-
   static Future<void> periodic(int delay, Callback callback) async {
-    int currentId = _nextCallbackId++;
-    _callbacksById[currentId] = callback;
-    _channel.setMethodCallHandler(_methodCallHandler);
+    bool isActiveVal = await isActive;
+    if (!isActiveVal) {
+      if (!await _channel.invokeMethod('lowLevelHandlingEnabled')) {
+        myTimer = Timer.periodic(Duration (milliseconds: delay), (Timer t) {callback ();});
+      } else {
+        int currentId = _nextCallbackId++;
+        _callbacksById[currentId] = callback;
+        _channel.setMethodCallHandler(_methodCallHandler);
 
-    await _channel.invokeMethod('runBackgroundTimer', {'id' : currentId, 'delay': delay});
+        await _channel.invokeMethod('runBackgroundTimer', {'id' : currentId, 'delay': delay});
 
-    return () {
-      cancel ();
-      _callbacksById.remove(currentId);
-    };
+        return () {
+          cancel ();
+          _callbacksById.remove(currentId);
+        };
+      }
+    }
   }
 
   static Future<void> cancel() async {
-    _channel.invokeMethod('stopBackgroundTimer');
+    bool isActiveVal = await isActive;
+    if (isActiveVal) {
+      if (!await _channel.invokeMethod('lowLevelHandlingEnabled')) {
+        myTimer.cancel();
+        myTimer = null;
+      } else {
+        await _channel.invokeMethod('stopBackgroundTimer');
+      }
+    }
+  }
+
+  static Future<bool> get isActive async {
+    if (!await _channel.invokeMethod('lowLevelHandlingEnabled')) {
+      return myTimer != null && myTimer.isActive;
+    } else {
+       final bool retval = await _channel.invokeMethod('isBackgroundTimerRunning');
+       return retval;
+    }
   }
 
   static Future<void> _methodCallHandler(MethodCall call) async {
