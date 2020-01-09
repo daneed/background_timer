@@ -11,7 +11,7 @@ class BackgroundTimer {
   static bool _isActive = false;
 
   static const MethodChannel _channel =
-      const MethodChannel('background_tmer');
+      const MethodChannel('background_timer');
 
   static Future<void> periodic(int delay, Callback callback) async {
     if (!isActive) {
@@ -20,7 +20,6 @@ class BackgroundTimer {
         _myTimer = Timer.periodic(Duration (milliseconds: delay), (Timer t) {
           callback ();
         });
-        _isActive = false;
       } else {
         int currentId = _nextCallbackId++;
         _callbacksById[currentId] = callback;
@@ -41,6 +40,7 @@ class BackgroundTimer {
       if (!await _channel.invokeMethod('lowLevelHandlingEnabled')) {
         _myTimer.cancel();
         _myTimer = null;
+        _isActive = false;
       } else {
         await _channel.invokeMethod('stopBackgroundTimer');
         _isActive = false;
