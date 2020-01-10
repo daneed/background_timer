@@ -26,7 +26,6 @@ class BackgroundTimer {
         _channel.setMethodCallHandler(_methodCallHandler);
         _isActive = true;
         await _channel.invokeMethod('runBackgroundTimer', {'id' : currentId, 'delay': delay});
-        _isActive = false;
         return () {
           cancel ();
           _callbacksById.remove(currentId);
