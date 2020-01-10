@@ -3,7 +3,7 @@
 static FlutterMethodChannel* channel;
 
 @implementation BackgroundTimerPlugin {
-  UIBackgroundTaskIdentifier bgTask;
+  dispatch_source_t timer;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
@@ -14,8 +14,9 @@ static FlutterMethodChannel* channel;
 }
 
 -(id)init {
-  bgTask = UIBackgroundTaskInvalid;
+  timer = nil;
   return self;
+  
 }
 
 - (void) handleMethodCall:(FlutterMethodCall*) call result: (FlutterResult) result {
@@ -30,7 +31,7 @@ static FlutterMethodChannel* channel;
     [self stopBackgroundTimer];
      result(nil);
   } else if ([@"isBackgroundTimerRunning" isEqualToString: call.method]) {
-    result([NSNumber numberWithBool:(bgTask != UIBackgroundTaskInvalid)]);
+    result([NSNumber numberWithBool:(timer != nil)]);
   } else {
      result(nil);
   }
@@ -40,7 +41,7 @@ static FlutterMethodChannel* channel;
                       delay: (NSInteger) timeout
 {
   NSLog ([NSString stringWithFormat:@"runBackgroundTimer called, timeout: %d", timeout]);
-  if(bgTask != UIBackgroundTaskInvalid) {
+  if(timer != nil) {
     [channel invokeMethod:@"BackgroundTimerAck" arguments: @{@"msg": @" run FAILED, it is already running"}];
   } else {
     [channel invokeMethod:@"BackgroundTimerAck" arguments: @{@"msg": @" run SUCCEED, starting timer"}];
@@ -50,10 +51,10 @@ static FlutterMethodChannel* channel;
 
 - (void) stopBackgroundTimer {
   NSLog (@"stopBackgroundTimer called");
-  if(bgTask != UIBackgroundTaskInvalid) {
+  if(timer != nil) {
     [channel invokeMethod:@"BackgroundTimerAck" arguments: @{@"msg": @" stop OK"}];
-    [[UIApplication sharedApplication] endBackgroundTask:bgTask];
-    bgTask = UIBackgroundTaskInvalid;
+    dispatch_cancel (timer);
+    timer = nil;
   } else {
     [channel invokeMethod:@"BackgroundTimerAck" arguments: @{@"msg": @" stop FAILED, it is stopped"}];
   }
@@ -62,17 +63,13 @@ static FlutterMethodChannel* channel;
 - (void) timeout : (NSInteger) currentId
            delay : (NSInteger) timeout
 {
-  bgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithName:@"BackgroundTimer" expirationHandler:^{
-    [[UIApplication sharedApplication] endBackgroundTask:bgTask];
-    bgTask = UIBackgroundTaskInvalid;
-  }];
-
-  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, timeout * NSEC_PER_MSEC), dispatch_get_main_queue(), ^{
-    if(bgTask != UIBackgroundTaskInvalid) {
-      [channel invokeMethod:@"callback" arguments: @ {@"id": [NSNumber numberWithInt : currentId]}];
-      [self timeout:currentId delay: timeout];
-    }
+  dispatch_queue_t queue = dispatch_queue_create("com.daneed.background_timer", 0);
+  timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);
+  dispatch_source_set_timer(timer, dispatch_walltime(NULL, 1000 * NSEC_PER_MSEC), timeout * NSEC_PER_MSEC, 0.1 * NSEC_PER_SEC);
+  dispatch_source_set_event_handler(timer, ^{
+    [channel invokeMethod:@"callback" arguments: @ {@"id": [NSNumber numberWithInt : currentId]}];
   });
+  dispatch_resume(timer);
 }
 
 @end
