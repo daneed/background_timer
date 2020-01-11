@@ -51,14 +51,19 @@ class BackgroundTimer {
     return _isActive;
   }
 
+  static int counter = 0;
+
   static Future<void> _methodCallHandler(MethodCall call) async {
     if (call.method == 'callback') {
       if (_callbacksById[call.arguments["id"]] != null) {
+        print ("BackgroundTimer : callback arrived from Plugin, counter: " + counter.toString());
+        ++counter;
         _callbacksById[call.arguments["id"]]();
       }
     } else if (call.method == 'BackgroundTimerAck') {
       if (call.arguments["msg"] != null) {
-        print("runBackgroundTimerAck arrived from Plugin, msg: " + call.arguments["msg"]);
+        print("BackgroundTimer : runBackgroundTimerAck arrived from Plugin, msg: " + call.arguments["msg"]);
+        counter = 0;
       }
     }
   }
