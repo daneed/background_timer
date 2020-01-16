@@ -27,19 +27,22 @@ class BackgroundTimer {
         _isActive = true;
         await _channel.invokeMethod('runBackgroundTimer', {'id' : currentId, 'delay': delay});
         return () {
-          cancel ();
+          cancel (null);
           _callbacksById.remove(currentId);
         };
       }
     }
   }
 
-  static Future<void> cancel() async {
+  static Future<void> cancel(Callback callback) async {
     if (isActive) {
       if (!await _channel.invokeMethod('lowLevelHandlingEnabled')) {
         _myTimer.cancel();
         _myTimer = null;
         _isActive = false;
+        if (callback != null) {
+          callback ();
+        }
       } else {
         await _channel.invokeMethod('stopBackgroundTimer');
         _isActive = false;
