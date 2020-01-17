@@ -45,7 +45,7 @@ class BackgroundTimer {
         _isActive = false;
       }
       if (callback != null) {
-        callback ();
+        callback();
       }
     }
   }
