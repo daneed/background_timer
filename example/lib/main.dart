@@ -65,7 +65,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   void stopTimer () async {
-    await BackgroundTimer.cancel();
+    await BackgroundTimer.cancel(null);
     setState(() {
       _time = 0;
     });
