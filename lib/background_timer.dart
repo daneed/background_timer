@@ -40,12 +40,12 @@ class BackgroundTimer {
         _myTimer.cancel();
         _myTimer = null;
         _isActive = false;
-        if (callback != null) {
-          callback ();
-        }
       } else {
         await _channel.invokeMethod('stopBackgroundTimer');
         _isActive = false;
+      }
+      if (callback != null) {
+        callback ();
       }
     }
   }
