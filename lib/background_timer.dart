@@ -10,12 +10,14 @@ class BackgroundTimer {
   static Map<int, Callback> _callbacksById = new Map ();
   static bool _isActive = false;
 
-  static const MethodChannel _channel =
-      const MethodChannel('background_timer');
+  static const MethodChannel _channel = const MethodChannel('background_timer');
 
   static Future<void> periodic(int delay, Callback callback) async {
+    _channel.setMethodCallHandler(_methodCallHandler);
     if (!isActive) {
       if (!await _channel.invokeMethod('lowLevelHandlingEnabled')) {
+        bool result = await _channel.invokeMethod('backgroundTimerWillStart');
+        print("BackgroundTimer: backgroundTimerWillStart result: " + result.toString());
         _isActive = true;
         _myTimer = Timer.periodic(Duration (milliseconds: delay), (Timer t) {
           callback ();
@@ -23,7 +25,6 @@ class BackgroundTimer {
       } else {
         int currentId = _nextCallbackId++;
         _callbacksById[currentId] = callback;
-        _channel.setMethodCallHandler(_methodCallHandler);
         _isActive = true;
         await _channel.invokeMethod('runBackgroundTimer', {'id' : currentId, 'delay': delay});
         return () {
@@ -37,6 +38,8 @@ class BackgroundTimer {
   static Future<void> cancel(Callback callback) async {
     if (isActive) {
       if (!await _channel.invokeMethod('lowLevelHandlingEnabled')) {
+        bool result = await _channel.invokeMethod('backgroundTimerWillEnd');
+        print("BackgroundTimer: backgroundTimerWillEnd result: " + result.toString());
         _myTimer.cancel();
         _myTimer = null;
         _isActive = false;
@@ -68,6 +71,8 @@ class BackgroundTimer {
         print("BackgroundTimer : runBackgroundTimerAck arrived from Plugin, msg: " + call.arguments["msg"]);
         counter = 0;
       }
+    } else {
+      print ("BackgroundTimer, call arrived from method channel, method: " + call.method);
     }
   }
 }
