@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
 typedef void Callback();
@@ -8,7 +9,11 @@ class BackgroundTimer {
   static Timer _myTimer;
   static int _nextCallbackId = 0;
   static Map<int, Callback> _callbacksById = new Map ();
-  static bool _isActive = false;
+
+  static ValueNotifier<bool> _isActiveVn = ValueNotifier<bool> (false);
+  static ValueNotifier<bool> get isActiveVn => _isActiveVn;
+  static bool   get isActive => _isActiveVn.value;
+  static        set isActive(bool newValue) => _isActiveVn.value = newValue;
 
   static const MethodChannel _channel = const MethodChannel('background_timer');
 
@@ -18,14 +23,14 @@ class BackgroundTimer {
       if (!await _channel.invokeMethod('lowLevelHandlingEnabled')) {
         bool result = await _channel.invokeMethod('backgroundTimerWillStart');
         print("BackgroundTimer: backgroundTimerWillStart result: " + result.toString());
-        _isActive = true;
+        isActive = true;
         _myTimer = Timer.periodic(Duration (milliseconds: delay), (Timer t) {
           callback ();
         });
       } else {
         int currentId = _nextCallbackId++;
         _callbacksById[currentId] = callback;
-        _isActive = true;
+        isActive = true;
         await _channel.invokeMethod('runBackgroundTimer', {'id' : currentId, 'delay': delay});
         return () {
           cancel (null);
@@ -42,19 +47,15 @@ class BackgroundTimer {
         print("BackgroundTimer: backgroundTimerWillEnd result: " + result.toString());
         _myTimer.cancel();
         _myTimer = null;
-        _isActive = false;
+        isActive = false;
       } else {
         await _channel.invokeMethod('stopBackgroundTimer');
-        _isActive = false;
+        isActive = false;
       }
       if (callback != null) {
         callback();
       }
     }
-  }
-
-  static bool get isActive {
-    return _isActive;
   }
 
   static int counter = 0;
