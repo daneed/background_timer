@@ -41,8 +41,10 @@ public class BackgroundTimerPlugin implements FlutterPlugin, MethodCallHandler, 
     channel = new MethodChannel(registrar.messenger(), "background_timer");
 
     final BackgroundTimerPlugin instance = new BackgroundTimerPlugin();
-    instance.powerManager = (PowerManager)registrar.activity().getSystemService(Application.POWER_SERVICE);
-    instance.wakeLock = instance.powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "background_timer_wakelock_android");
+    if (registrar.activity() != null) {
+      instance.powerManager = (PowerManager)registrar.activity().getSystemService(Application.POWER_SERVICE);
+      instance.wakeLock = instance.powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "background_timer_wakelock_android");
+    }
 
     channel.setMethodCallHandler(instance);
 
