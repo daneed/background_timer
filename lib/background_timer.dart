@@ -63,7 +63,7 @@ class BackgroundTimer {
   static Future<void> _methodCallHandler(MethodCall call) async {
     if (call.method == 'callback') {
       if (_callbacksById[call.arguments["id"]] != null) {
-        print ("BackgroundTimer : callback arrived from Plugin, counter: " + counter.toString());
+        //print ("BackgroundTimer : callback arrived from Plugin, counter: " + counter.toString());
         ++counter;
         _callbacksById[call.arguments["id"]]();
       }
