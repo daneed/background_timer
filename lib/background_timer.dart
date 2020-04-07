@@ -25,7 +25,7 @@ class BackgroundTimer {
         print("BackgroundTimer: backgroundTimerWillStart result: " + result.toString());
         isActive = true;
         _myTimer = Timer.periodic(Duration (milliseconds: delay), (Timer t) {
-          callback ();
+          callback();
         });
       } else {
         int currentId = _nextCallbackId++;
